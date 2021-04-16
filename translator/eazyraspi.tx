@@ -1,0 +1,300 @@
+/*
+    Author: Klemen Berkovic
+    Date: 22. 9. 2020
+*/
+
+EazyRasPi:
+	END* head = Head? END* program += Program
+;
+
+Head:
+	(progName = ProgramName? license = License? author = Author?)#
+;
+
+License:
+	'license' (
+		('"' licensen = STRN? '"') |
+		license = STR
+	) END
+;
+
+ProgramName:
+	'program' (
+		('"' namen = STRN? '"') |
+		name = STR
+	) END
+;
+
+Author:
+	'author' (
+		('"' authorn = STRN? '"') |
+		author = STR
+	) END
+;
+
+Program:
+	(
+		server     = Server       |
+		dateFormat = DateFormat   |
+		logFormat  = LoggerFormat |
+		rutine     = Rutine
+	) END
+;
+
+DateFormat:
+	'date' 'format' dateformat = DATEFORMAT
+;
+
+LoggerFormat:
+	'logger' 'format' (
+		format = LOGGER_FORMAT |
+		path   = PATH
+	)
+;
+
+Server:
+	'server' (
+		serverData = ServerData |
+		serverPort = ServerPort
+	)
+;
+
+ServerData:
+	'data' '"'? dataDir = PATH '"'?
+;
+
+ServerPort:
+	'port' portNumber = INT
+;
+
+Rutine:
+	'rut' (name = ID)? rutActivation = RutineActivation? 'begin' END? statements += Statement 'end'
+;
+
+RutineActivation:
+	(time = TimeActivation? button = ButtonActivation?)#
+;
+
+ButtonActivation:
+	'(' button += BUTTON[','] ')'
+;
+
+TimeActivation:
+	'[' time += INT[','] ']'
+;
+
+Statement:
+	(
+		Variable   |
+		ControlStm |
+		Rutine     |
+		RutineCall |
+		SleepStm   |
+		MoveStm    |
+		RotateStm  |
+		LedSetStm  |
+		LidStm     |
+		ScopeStm   |
+		GarbageStm
+	) END
+;
+
+ScopeStm:
+	'begin' END? statements += Statement 'end'
+;
+
+LidStm:
+	'lid' ':' (
+		close ?= 'close' |
+		open  ?= 'open'
+	)
+;
+
+GarbageStm:
+	const = GARBAGE
+;
+
+LedSetStm:
+	led = LedStm '=' expr = Expression
+;
+
+SleepStm:
+	'sleep' time = Expression
+;
+
+MoveStm:
+	'move' ':' (
+		backword ?= 'backword' |
+		forward  ?= 'forward'
+	) arg1 = Expression (arg2 = Expression)?
+;
+
+RotateStm:
+	'rotate' ':' (
+		right ?= 'right' |
+		left  ?= 'left'
+	) arg1 = Expression (arg2 = Expression)?
+;
+
+ControlStm:
+	ifstm     = IfStm     |
+	whilestm  = WhileStm  | 
+	returnstm = ReturnStm
+;
+
+IfStm:
+	'if' condition = Expression END? 'then' END? statements += Statement 'end' END? (elseif += ElifStm)? (melse = ElseStm)? 
+;
+
+ElifStm:
+	'elif' condition = Expression END? 'then' END? statements += Statement 'end' END?
+;
+
+ElseStm:
+	'else' END? statements += Statement 'end'
+;
+
+WhileStm:
+	'while' condition = Expression END? 'begin' END? statements += Statement 'end'
+;
+
+ReturnStm:
+	'return' expression = Expression?
+;
+
+Variable:
+	name = ID '=' expression = Expression
+;
+
+Expression:
+	loper = Term (operations = ExprOpers ropers = Expression)*
+;
+
+ExprOpers:
+	ltq ?= /(<=)|(=<)/  |
+	gtq ?= /(>=)|(=>)/  |
+	equ ?= /(==)|(is)/  |
+	oor ?= 'or'         |
+	add ?= '+'          |
+	sub ?= '-'          |
+	gt  ?= '>'          |
+	lt  ?= '<'
+;
+
+Term:
+	loper = Factor (operations = TermOpers ropers = Term)*
+;
+
+TermOpers:
+	mul ?= '*'   |
+	div ?= '/'   |
+	amd ?= 'and' |
+	pow ?= '^'
+;
+
+Factor:
+	(sign = FactorOpers)? element = Element
+;
+
+FactorOpers:
+	neg ?= 'not' |
+	min ?= '-'
+;
+
+Element:
+	garbage   = GarbageStm        |
+	lid       = 'lid'             |
+	rand      = RandStm           |
+	led       = LedStm            |
+	('(' expr = Expression ')')   |
+	rutCall   = RutineCall        |
+	boolean   = BOOL              |
+	float     = FLOAT             |
+	int       = INT               |
+	variable  = ID
+;
+
+RandStm:
+	'rand' (
+		(arg1 = Expression (',' arg2 = Expression)?) |
+		(':' 'choice' argc = StaticArrayStm)
+	)
+;
+
+StaticArrayStm:
+	'[' exprs *= Expression[',']  ']'
+;
+
+LedStm:
+	name = LED ':' (
+		green ?= LED_GREEN |
+		blue  ?= LED_BLUE  |
+		red   ?= LED_RED
+	)
+;
+
+RutineCall:
+	rutRef = ID '()'
+;
+
+END:
+	/[\n;]+/
+;
+
+STR:
+	/[^\"\n\ ;]+/
+;
+
+STRN:
+	/[^\";]+/
+;
+
+FULLNUM:
+	/[0-9]+/
+;
+
+STRP:
+	/[^\"\n\ ;\\\/]+/
+;
+
+PATH:
+	(STRP ('/' STRP)*) |
+	(STRP ('\' STRP)*)
+;
+
+BUTTON:
+	/b[123]{1}/
+;
+
+LED:
+	/led[12]{1}/
+;
+
+BOOL:
+	/true/  |
+	/false/ 
+;
+
+GARBAGE:
+	/garbage/
+;
+
+DATEFORMAT:
+	/\"([\ \:\.\-\+\/\\]*(\%[aAwdbBmyYHIpMSfzZjUWcxGuV\%]))+\"/
+;
+
+LOGGER_FORMAT:
+	/(?ms)\"(.*?)\"/
+;
+
+LED_GREEN:
+	/g(reen)?/
+;
+
+LED_RED:
+	/r(ed)?/
+;
+
+LED_BLUE:
+	/b(lue)?/
+;

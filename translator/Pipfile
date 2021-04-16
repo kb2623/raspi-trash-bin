@@ -1,0 +1,13 @@
+[[source]]
+url = 'https://pypi.python.org/simple'
+verify_ssl = true
+name = 'pypi'
+
+[packages]
+numpy = ">=1.18.4"
+textX = ">=2.2.0"
+graphviz = ">=0.14.1"
+ipython = ">=7.18.1"
+
+[dev-packages]
+pytest = ">=6.2.2"

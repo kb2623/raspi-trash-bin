@@ -1,0 +1,41 @@
+program MojTestniProgram
+author Klemen
+
+rut (b1) begin
+   lid:close
+   move:forward 1
+   rotate:left 30
+   move:backword 1
+	rotate:left 30 0.74
+   move:forward 5
+	rotate:right 130
+   move:forward 9 0.9
+	move:forward 5 / 5
+	move:forward 5 + 4
+	move:forward 5 * 3
+	begin
+		lid:open
+		sleep 10
+		lid:close
+	end
+end
+
+rut (b2) begin
+	lid:close
+	a = 10
+	while true begin
+		if a > 10 then lid:close; end
+		elif a > 5 and a < 10 then lid:open; end
+		elif a < 10 then lid:open; end
+		else sleep 10; end
+		lid:open
+		sleep 10
+		lid:close
+	end
+end
+
+rut randTest(b3) begin
+	b = rand 1, 2
+	c = rand:choice [1, 2, 3]
+	return b + c
+end

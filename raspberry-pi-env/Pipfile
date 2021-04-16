@@ -1,0 +1,12 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+
+[packages]
+numpy = ">=1.18.4"
+gpiozero = ">=1.5.1"
+SoundFile = ">=0.10.3.post1"
+PyAudio = ">=0.2.11"
+Flask = ">=1.1.1"
+ipython = "*"
+

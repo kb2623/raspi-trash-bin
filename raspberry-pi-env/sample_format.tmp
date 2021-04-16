@@ -1,0 +1,8 @@
+{
+	'name': '#FILENAME#',
+	'date': '#DATE#',
+	'time': '#TIME#',
+	'date_time': '#DATETIME#',
+	'date_format': '#FORMATEDDATE#',
+	'value': #GARBAGE#
+}

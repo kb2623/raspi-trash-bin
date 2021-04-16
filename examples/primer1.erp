@@ -1,0 +1,39 @@
+program programOne
+author Klemen
+license "MIT License"
+
+server data "data"
+server port 8080
+date format "%b-%d-%Y %H:%M:%S"
+logger format "
+{
+	'name': '#FILENAME#',
+	'date': '#DATE#',
+	'time': '#TIME#',
+	'date_time': '#DATETIME#',
+	'date_format': '#FORMATEDDATE#',
+	'value': #GARBAGE#
+}
+"
+
+rut [10800] begin
+   garbage
+	lid:open
+	lid:close
+	sleep 10
+	a = 10 + 20 + 30 + 40 - (-10 ^ 2)
+	if a < 10 then
+		return 10
+	end
+	elif a > 10 and a < 20 then
+		return 20
+	end
+	elif a > 20 and a < 30 then
+		return a * 20
+	end
+	else
+		b = a + 10
+		return b
+	end
+	return false
+end
